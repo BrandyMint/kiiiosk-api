@@ -1,8 +1,10 @@
-# my-api
+# Kiiiosk open API
 
-FIXME
+Конфиг тут: ./src/config.clj
 
 ## Usage
+
+Пример как разворачивать для production: http://www.luminusweb.net/docs/deployment.md
 
 ### Run the application locally
 
