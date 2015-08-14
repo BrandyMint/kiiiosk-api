@@ -2,6 +2,7 @@
   :description "Kiosk public API"
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
+                 [clj-bugsnag "0.2.3"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/java.jdbc "0.3.2"]
                  [metosin/compojure-api "0.22.0"]]

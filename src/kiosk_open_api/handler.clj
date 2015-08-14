@@ -2,9 +2,10 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [kiosk-open-api.schemas :refer [ProductCard]]
+            [clj-bugsnag.core :as bugsnag]
+            [clj-bugsnag.ring :as bugsnag.ring]
             [kiosk-open-api.utils :refer :all]
             ))
-
 
 (defn -main [& args])
 
@@ -40,3 +41,17 @@
                   )
             )
   )
+
+
+(bugsnag.ring/wrap-bugsnag
+  app
+  {:api-key "50af506d5ce22190e37b64ff72726576"
+   ;; Defaults to "production"
+   :environment "production"
+   ;; Project namespace prefix, used to hide irrelevant stack trace elements
+   :project-ns "kiosk-open-api"
+   ;; A optional function to extract a user object from a ring request map
+   ;; Used to count how many users are affected by a crash
+   :user-from-request (constantly {:id "shall return a map"})})
+
+
