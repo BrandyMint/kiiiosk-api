@@ -21,6 +21,12 @@ Leiningen 2.5.2 on Java 1.7.0_76 Java HotSpot(TM) 64-Bit Server VM
 
 `lein test`
 
+### Production
+
+На 2-м сервере:
+
+`tail -f /var/log/tomcat7/catalina.out`
+
 ### Packaging and running as standalone jar
 
 ```
