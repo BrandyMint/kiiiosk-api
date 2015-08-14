@@ -30,7 +30,7 @@ java -jar target/server.jar
 
 ### Packaging as war
 
-`lein ring uberwar +war`
+`lein ring uberwar`
 
 ## License
 
