@@ -4,6 +4,13 @@
 
 ## Usage
 
+Убедитесь что:
+
+```
+> lein version
+Leiningen 2.5.2 on Java 1.7.0_76 Java HotSpot(TM) 64-Bit Server VM
+```
+
 Пример как разворачивать для production: http://www.luminusweb.net/docs/deployment.md
 
 ### Run the application locally
@@ -23,7 +30,7 @@ java -jar target/server.jar
 
 ### Packaging as war
 
-`lein ring uberwar`
+`lein ring uberwar +war`
 
 ## License
 
