@@ -32,6 +32,9 @@ java -jar target/server.jar
 
 `lein ring uberwar`
 
+### Deploy
+`bundle exec cap production deploy `
+
 ## License
 
 Copyright ©  FIXME
