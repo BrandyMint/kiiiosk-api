@@ -1,3 +1,4 @@
 *-port
 /target/*
 .lein*
+.capistrano
