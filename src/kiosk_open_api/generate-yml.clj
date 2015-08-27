@@ -1,57 +1,50 @@
 (ns generate-yml.core
-  (:require [clojure.data.xml :as xml]
-            [clojure.java.io :as io]
-            [clojure.java.jdbc :as sql]
-            [clj-postgresql.core :as pg]))
+  "Functions for generation Yandex-compatible YML files"
+  (:require [clojure.java.io :as io]
+            [hiccup.core :refer [html]]
+            [hiccup.page :refer [xml-declaration]]
+            [config :refer [query platform version agency email]]))
 
-; TODO: Transfer constants into the config
+(def doctype
+  {:yandex-market
+    "<!DOCTYPE yml_catalog SYSTEM \"shops.dtd\">\n"})
 
-(def db (pg/spec))
-(def platform "Kiiiosk")
-(def agency "Kiiiosk.ru")
-(def email "support@kiiiosk.ru")
-(def version "1.0")
+(defn generate-currencies-tags
+  [currency-iso-code]
+  [:currency {:id currency-iso-code :rate 1}])
 
-(declare generate-tags generate-shop-tags)
+(defn generate-categories-tags
+  [categories]
+  (map (fn [{:keys [id name]}] [:category {:id id} name]) categories))
+
+;; TODO: :delivery-options, :offers
+(defn generate-shop-tags
+  [vendor-id]
+  (let [vendor (first (query [(str "select * from vendors where id = " vendor-id)]))
+        vendor-categories (query [(str "select * from categories where vendor_id = " vendor-id)])]
+    [:shop {}
+      [:name {} (:name vendor)]
+      [:company {} (:company_name vendor)]
+      [:url {} (:cached_home_url vendor)]
+      [:platform {} platform]
+      [:version {} version]
+      [:agency {} agency]
+      [:email {} email]
+      [:currencies {} (generate-currencies-tags (:currency_iso_code vendor))]
+      [:categories {} (generate-categories-tags vendor-categories)]]))
+
+(defn generate-tags
+  [vendor-id]
+  (let [date (.format (java.text.SimpleDateFormat. "YYYY-MM-dd hh:mm") (java.util.Date.))]
+    (str (xml-declaration "windows-1251")
+         (doctype :yandex-market)
+         (html [:yml_catalog {:date date}
+                (generate-shop-tags vendor-id)]))))
 
 (defn generate-yml
   [vendor-id output-path]
   (let [tags (generate-tags vendor-id)]
     (with-open [out-file (io/writer output-path :encoding "UTF-8")]
-      (xml/emit tags out-file :encoding "windows-1251"))))
-
-(defn generate-tags
-  [vendor-id]
-  (xml/element :yml_catalog {:date (java.util.Date.)}
-    (generate-shop-tags vendor-id)))
-
-(defn generate-shop-tags
-  [vendor-id]
-  (let [vendor (first (sql/query db [(str "select * from vendors where id = " vendor-id)]))
-        vendor-categories (sql/query db [(str "select * from categories where vendor_id = " vendor-id)])]
-    (xml/sexp-as-element
-      [:shop {}
-        [:name {} (:name vendor)]
-        [:company {} (:company_name vendor)]
-        [:url {} (:cached_home_url vendor)]
-        [:platform {} platform]
-        [:version {} version]
-        [:agency {} agency]
-        [:email {} email]])))
-
-; (xml/element :currencies {} ())
-;       (xml/element :categories {} ())
-;       (xml/element :delivery-options {} ())
-;       (xml/element :offers {} ())
+      (.write out-file tags))))
 
 ; (generate-yml 355 "/tmp/bar.xml")
-
-; (defn generate-yml-by-vendor-id
-;   [output-path]
-;   (let [tags (xml/element :yml_catalog {:date (java.util.Date.)}
-;                         (xml/element :shop {}
-;                                      (xml/element :name {} "BestShop")))]
-;   (with-open [out-file (clojure.java.io/writer output-path :encoding "UTF-8")]
-;     (xml/emit tags out-file :encoding "windows-1251"))))
-
-; (generate-yaml "/tmp/bar.xml")
