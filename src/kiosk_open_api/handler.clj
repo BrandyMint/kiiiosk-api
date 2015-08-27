@@ -4,8 +4,7 @@
             [kiosk-open-api.schemas :refer [ProductCard]]
             [clj-bugsnag.core :as bugsnag]
             [clj-bugsnag.ring :as bugsnag.ring]
-            [kiosk-open-api.utils :refer :all]
-            ))
+            [kiosk-open-api.utils :refer :all]))
 
 (defn -main [& args])
 
