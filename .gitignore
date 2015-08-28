@@ -2,3 +2,4 @@
 /target/*
 .lein*
 .capistrano
+.DS_Store
