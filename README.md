@@ -17,6 +17,10 @@ Leiningen 2.5.2 on Java 1.7.0_76 Java HotSpot(TM) 64-Bit Server VM
 
 `lein ring server`
 
+### Run the application via Vagrant
+
+`lein ring server-headless`
+
 ### Run the tests
 
 `lein test`
