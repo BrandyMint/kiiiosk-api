@@ -11,7 +11,7 @@
                          where deleted_at is null
                          and vendor_id = " vendor-id)]))
 
-(defn get-vendor-deliveries
+(defn get-vendor-not-pickup-deliveries
   [vendor-id]
   (query [(str "select * from vendor_deliveries
                          where deleted_at is null
