@@ -22,6 +22,7 @@
   [vendor-id]
   (query [(str "select * from products
                          where deleted_at is null
+                         and type != 'ProductUnion'
                          and price_kopeks is not null
                          and vendor_id = " vendor-id)]))
 
