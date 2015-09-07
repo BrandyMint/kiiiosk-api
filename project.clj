@@ -7,7 +7,8 @@
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/java.jdbc "0.3.2"]
                  [metosin/compojure-api "0.22.0"]]
-  :ring {:handler kiosk-open-api.handler/app}
+  :ring {:handler kiosk-open-api.handler/app
+         :open-browser? false}
   :uberjar-name "server.jar"
   :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                   [org.clojure/java.jdbc "0.4.1"]
