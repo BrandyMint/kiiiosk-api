@@ -5,7 +5,7 @@
             [generate-yml.core :refer [generate-yml]]
             [kiosk-open-api.schemas :refer [ProductCard]]
             [kiosk-open-api.utils :refer :all]
-            [config :refer [ymarket-qname ymarket-yml-output-path]]))
+            [config :refer [ymarket-qname get-ymarket-yml-output-path]]))
 
 (defn -main [& args])
 
@@ -28,12 +28,13 @@
     (ok {:response "Ok. Pong.."}))
 
   (context* "/yandex-market" []
+
     (POST* "/:vendor-id" []
       :path-params [vendor-id :- Long]
       :summary "Makes YML-file"
-      (do
-        (future (generate-yml vendor-id ymarket-yml-output-path))
-        (ok "Process started"))))
+      (let [output-path (get-ymarket-yml-output-path vendor-id)]
+        (future (generate-yml vendor-id output-path))
+        (ok "Generation started"))))
 
   (context* "/products" []
     :tags ["products"]
