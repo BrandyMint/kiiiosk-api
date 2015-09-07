@@ -2,7 +2,8 @@
   "Globally used configuration data"
   (:require [clojurewerkz.elastisch.rest :refer [connect]]
             [clj-postgresql.core :as pg]
-            [clojure.java.jdbc :as sql]))
+            [clojure.java.jdbc :as sql]
+            [clojure.string :as s]))
 
 ; JDBC
 (def db (pg/spec))
@@ -20,4 +21,8 @@
 ; RabbitMQ
 (def ^{:const true} default-exchange-name "")
 (def ^{:const true} ymarket-qname "yandex_market_queue")
-(def ^{:const true} ymarket-yml-output-path "./:vendor_id/yandex_market.yml")
+(def ^{:const true} ymarket-yml-output-pattern "./yml_catalogs/:vendor-id/yandex_market.yml")
+
+(defn get-ymarket-yml-output-path
+  [vendor-id]
+  (s/replace ymarket-yml-output-pattern #":vendor-id" (str vendor-id)))
