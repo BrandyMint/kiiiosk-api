@@ -20,4 +20,4 @@
 ; RabbitMQ
 (def ^{:const true} default-exchange-name "")
 (def ^{:const true} ymarket-qname "yandex_market_queue")
-(def ^{:const true} ymarket-yml-output-path "./catalog.yml")
+(def ^{:const true} ymarket-yml-output-path "./:vendor_id/yandex_market.yml")
