@@ -3,8 +3,7 @@
             [clojure.set]
             [schema.coerce :as coerce]
             [kiosk-open-api.schemas :refer :all]
-            [clojurewerkz.elastisch.rest :as esr]
-            ))
+            [clojurewerkz.elastisch.rest :as esr]))
 
 ;(require '[clojure.java.jdbc :as sql])
 ;(require '[clj-postgresql.core :as pg])

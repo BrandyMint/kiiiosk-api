@@ -16,3 +16,5 @@
 (def agency "Kiiiosk.ru")
 (def email "support@kiiiosk.ru")
 (def version "1.0")
+
+(def yandex-yml-output-path "/tmp/bar.xml")
