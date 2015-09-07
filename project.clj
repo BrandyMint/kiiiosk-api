@@ -12,6 +12,7 @@
   :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                   [org.clojure/java.jdbc "0.4.1"]
                                   [org.clojure/tools.trace "0.7.5"]
+                                  [com.novemberain/langohr "3.3.0"]
                                   [hiccup "1.0.5"]
                                   [postgresql "9.3-1102.jdbc41"]
                                   [clj-postgresql "0.4.0"]

@@ -1,22 +1,16 @@
 (ns kiosk-open-api.schemas
-  (:require [schema.core :as s]
-            ))
+  (:require [schema.core :refer [defschema enum]]))
 
 ;;
 ;; Schemas
 ;;
 
-(s/defschema ProductCard
+(defschema ProductCard
   {:id Integer
-   ;;:type String
-   :title String
-   ;; :categories [{:name String :id Long}]
-   }
-  )
+   :title String})
 
-(s/defschema Thingie
+(defschema Thingie
   {:id Long
    :hot Boolean
-   :tag (s/enum :kikka :kukka)
-   :chief [{:name String :id Long}]
-   })
+   :tag (enum :kikka :kukka)
+   :chief [{:name String :id Long}]})
