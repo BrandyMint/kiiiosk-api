@@ -17,6 +17,16 @@ Leiningen 2.5.2 on Java 1.7.0_76 Java HotSpot(TM) 64-Bit Server VM
 
 `lein ring server`
 
+### RabbitMQ workers
+Запуск воркера генерации яндекс-каталога
+
+`PGDATABASE=kiiiosk_development ~/bin/lein run -m workers.yandex-market`
+
+Команда на генерацию яндекс каталога
+$VENDOR_ID идентификатор вендора, для которого генерируем каталог
+
+`PGDATABASE=kiiiosk_development ~/bin/lein run -m commands.yandex-market $VENDOR_ID`
+
 ### Run the application via Vagrant
 
 `lein ring server-headless`

@@ -4,7 +4,8 @@
             [clj-bugsnag.ring :refer [wrap-bugsnag]]
             [generate-yml.core :refer [generate-yml]]
             [kiosk-open-api.schemas :refer [ProductCard]]
-            [kiosk-open-api.utils :refer :all]))
+            [kiosk-open-api.utils :refer :all]
+            [config :refer [ymarket-qname ymarket-yml-output-path]]))
 
 (defn -main [& args])
 
@@ -31,7 +32,7 @@
       :path-params [vendor-id :- Long]
       :summary "Makes YML-file"
       (do
-        (future (generate-yml vendor-id "/tmp/bar.xml"))
+        (future (generate-yml vendor-id ymarket-yml-output-path))
         (ok "Process started"))))
 
   (context* "/products" []

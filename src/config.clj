@@ -17,4 +17,7 @@
 (def email "support@kiiiosk.ru")
 (def version "1.0")
 
-(def yandex-yml-output-path "/tmp/bar.xml")
+; RabbitMQ
+(def ^{:const true} default-exchange-name "")
+(def ^{:const true} ymarket-qname "yandex_market_queue")
+(def ^{:const true} ymarket-yml-output-path "./catalog.yml")
