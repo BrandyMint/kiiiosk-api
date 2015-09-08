@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="windows-1251"?>
-<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
-<yml_catalog date="2015-09-07 01:51"><shop><name>Мелочи жизни</name><company></company><url></url><platform>Kiiiosk</platform><version>1.0</version><agency>Kiiiosk.ru</agency><email>support@kiiiosk.ru</email><currencies><currency id="RUB" rate="1"></currency></currencies><currencies><category id="2578">Корневая категория</category><category id="2593" parentId="2578">Наручные часы</category></currencies><delivery-options></delivery-options><offers></offers></shop></yml_catalog>

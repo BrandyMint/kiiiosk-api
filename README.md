@@ -27,10 +27,6 @@ $VENDOR_ID идентификатор вендора, для которого г
 
 `PGDATABASE=kiiiosk_development ~/bin/lein run -m commands.yandex-market $VENDOR_ID`
 
-### Run the application via Vagrant
-
-`lein ring server-headless`
-
 ### Run the tests
 
 `lein test`
