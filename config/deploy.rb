@@ -1,6 +1,5 @@
 # config valid only for current version of Capistrano
 lock '3.3.5'
-set :application, "openapi.kiiiosk.ru"
 set :scm, :git
 set :repo_url, 'git@github.com:BrandyMint/kiiiosk-open-api.git'
 set :keep_releases, 5
