@@ -52,8 +52,11 @@ java -jar target/server.jar
 
 `lein ring uberwar`
 
-### Deploy
+### Deploy production
 `bundle exec cap production deploy `
+
+### Deploy staging
+`bundle exec cap staging deploy`
 
 ## License
 
