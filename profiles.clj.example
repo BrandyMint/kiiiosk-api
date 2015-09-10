@@ -1,0 +1,18 @@
+{:development {:env {:dev? true
+                     :pghost "localhost"
+                     :pgport 5432
+                     :pguser "postgres"
+                     :pgpassword ""
+                     :pgdatabase "kiiiosk_development"}}
+ :production  {:env {:production? true
+                     :pghost "localhost"
+                     :pgport 5432
+                     :pguser "postgres"
+                     :pgpassword ""
+                     :pgdatabase "kormilica_test"}}
+ :test        {:env {:test? true
+                     :pghost "localhost"
+                     :pgport 5432
+                     :pguser "postgres"
+                     :pgpassword ""
+                     :pgdatabase "kormilica_test"}}}

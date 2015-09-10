@@ -6,22 +6,12 @@
             [clojure.string :as s]
             [environ.core :refer [env]]))
 
-;; Database settings
-(def db-dev {:dbtype "postgresql"
-             :dbname "kiiiosk_developments"
-             :user nil ;; Используется системное имя
-             :password nil})
-
-(def db-dev {:dbtype "postgresql"
-             :dbname "kiiiosk_developments"
-             :user nil ;; Используется системное имя
-             :password nil})
-
-(defn db-config [cfg]
-  (->> cfg seq flatten (apply pg/spec)))
-
 ;; JDBC
-(def db (apply pg/spec db-dev))
+(def db (pg/spec :host (env :pghost)
+                 :port (env :pgport)
+                 :user (env :pguser)
+                 :password (env :pgpassword)
+                 :dbname (env :pgdatabase)))
 (def query (partial sql/query db))
 
 ;; Elasticsearch

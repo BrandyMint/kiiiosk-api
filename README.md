@@ -2,30 +2,34 @@
 
 Конфиг тут: ./src/config.clj
 
-## Usage
+## Запуск локально
+При первом запуске необходимо в корне создать файл `profiles.clj`, пример содержимого
+для файла можно посмотреть в `profiles.clj.example`
 
-Убедитесь что:
-
+Варианты запуск сервера
 ```
-> lein version
-Leiningen 2.5.2 on Java 1.7.0_76 Java HotSpot(TM) 64-Bit Server VM
+lein ring server                      ;; Запускается сервер, открывается браузер
+lein ring server-headless             ;; Запускается сервер
+lein with-profile dev server-headless ;; Запускается сервер с профилем dev
+```
+
+Варианты запуска repl
+```
+lein repl                  ;; Запускается repl
+lein with-profile dev repl ;; Запускается repl с профилем dev
 ```
 
 Пример как разворачивать для production: http://www.luminusweb.net/docs/deployment.md
 
-### Run the application locally
-
-`lein ring server`
-
 ### RabbitMQ workers
-Запуск воркера генерации яндекс-каталога
 
-`PGDATABASE=kiiiosk_development ~/bin/lein run -m workers.yandex-market`
+Генерация яндекс-каталога
 
-Команда на генерацию яндекс каталога
-$VENDOR_ID идентификатор вендора, для которого генерируем каталог
+Запуск:
+`lein run -m workers.yandex-market`
 
-`PGDATABASE=kiiiosk_development ~/bin/lein run -m commands.yandex-market $VENDOR_ID`
+Команда:
+`lein run -m commands.yandex-market $VENDOR_ID`
 
 ### Run the tests
 

@@ -10,18 +10,16 @@
                  [hiccup "1.0.5"]
                  [prismatic/schema "0.4.4"]
                  [metosin/compojure-api "0.23.1"]
-                 [environ "1.0.0"]
-                 [org.clojure/tools.nrepl "0.2.10"]]
+                 [environ "1.0.0"]]
   :plugins [[lein-environ "1.0.0"]]
   :ring {:handler kiosk-open-api.handler/app}
   :uberjar-name "server.jar"
-  :profiles {:production {:env {:production true}}
-             :test       {:env {:test true}}
-             :dev        {:env {:development true}
-                          :dependencies [[javax.servlet/servlet-api "2.5"]
-                                         [org.clojure/tools.trace "0.7.5"]
-                                         [com.novemberain/langohr "3.3.0"]
-                                         [cheshire "5.3.1"]
-                                         [ring-mock "0.1.5"]
-                                         [ring/ring-jetty-adapter "1.4.0"]]
-                          :plugins [[lein-ring "0.9.6"]]}})
+  :profiles {:dev [:development {:dependencies [[javax.servlet/servlet-api "2.5"]
+                                                [org.clojure/tools.trace "0.7.5"]
+                                                [com.novemberain/langohr "3.3.0"]
+                                                [cheshire "5.3.1"]
+                                                [ring-mock "0.1.5"]
+                                                [ring/ring-jetty-adapter "1.4.0"]]
+                                 :plugins [[lein-ring "0.9.6"]]}]
+             :repl {:dependencies [[org.clojure/tools.nrepl "0.2.10"]
+                                   [clojure-complete "0.2.4"]]}})

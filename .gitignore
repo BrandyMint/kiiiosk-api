@@ -3,3 +3,4 @@
 .lein*
 .capistrano
 .DS_Store
+profiles.clj
