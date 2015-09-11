@@ -26,9 +26,15 @@
 ;; RabbitMQ
 (def ^{:const true} default-exchange-name "")
 (def ^{:const true} ymarket-qname "yandex_market_queue")
-(def ^{:const true} ymarket-yml-output-pattern "./yml_catalogs/:vendor-id/yandex_market.yml")
+(def ^{:const true} ymarket-yml-output-pattern "./tmp/:vendor-id/yandex_market.yml")
+(def ^{:const true} tmail-qname "torg_mail_queue")
+(def ^{:const true} tmail-output-pattern "./tmp/:vendor-id/torg_mail.xml")
 
 ;; Helpers
-(defn ymarket-yml-output-path
+(defn ymarket-output-path
   [vendor-id]
   (s/replace ymarket-yml-output-pattern #":vendor-id" (str vendor-id)))
+
+(defn tmail-output-path
+  [vendor-id]
+  (s/replace tmail-output-pattern #":vendor-id" (str vendor-id)))

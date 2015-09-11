@@ -1,4 +1,4 @@
-(ns generate-yml.queries
+(ns generators.utils.queries
   (:require [config :refer [query]]))
 
 (defn get-vendor
@@ -8,6 +8,12 @@
 (defn get-vendor-categories
   [vendor-id]
   (query [(str "select * from categories
+                         where deleted_at is null
+                         and vendor_id = " vendor-id)]))
+
+(defn get-vendor-deliveries
+  [vendor-id]
+  (query [(str "select * from vendor_deliveries
                          where deleted_at is null
                          and vendor_id = " vendor-id)]))
 
@@ -29,13 +35,13 @@
 (defn get-vendor-property
   [vendor-id property-id]
   (first (query [(str "select * from vendor_properties
-                       where deleted_at is null
-                       and id = " property-id "
-                       and vendor_id = " vendor-id)])))
+                                where deleted_at is null
+                                and id = " property-id "
+                                and vendor_id = " vendor-id)])))
 
 (defn get-vendor-dictionary-entity
   [vendor-id entity-id]
   (first (query [(str "select * from dictionary_entities
-                       where deleted_at is null
-                       and id = " entity-id "
-                       and vendor_id = " vendor-id)])))
+                                where deleted_at is null
+                                and id = " entity-id "
+                                and vendor_id = " vendor-id)])))
