@@ -1,4 +1,4 @@
-(ns generate-yml.money
+(ns generators.utils.money
   "Functions for processing funding operations")
 
 ;; TODO: Migrate to https://github.com/clojurewerkz/money
