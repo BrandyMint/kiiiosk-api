@@ -1,8 +1,8 @@
 (ns generators.libs.currencies
-  (:require [generators.libs.money :as m]))
+  (:require [libs.money :as money]))
 
-(defn currencies
+(defn currencies-tree
   [currency_iso_code]
-  (let [rate (m/get-currency-rate currency_iso_code)]
+  (let [rate (money/get-currency-rate currency_iso_code)]
     [:currencies {}
      [:currency {:id currency_iso_code :rate rate}]]))

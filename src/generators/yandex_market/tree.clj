@@ -1,47 +1,50 @@
 (ns generators.yandex-market.tree
   (:require [hiccup.core :refer [html]]
             [hiccup.page :refer [xml-declaration]]
-            [generators.libs.money :as m]
-            [generators.libs.queries :as q]
-            [generators.libs.params :refer [params]]
-            [generators.libs.categories :refer [categories]]
-            [generators.libs.currencies :refer [currencies]]
+            [libs.date :as date]
+            [libs.money :as money]
+            [libs.queries :as queries]
+            [generators.libs.params :refer [params-nodes]]
+            [generators.libs.currencies :refer [currencies-tree]]
+            [generators.libs.categories :refer [categories-tree]]
             [config]))
 
 (def ^:private doctype
   {:yandex-market "<!DOCTYPE yml_catalog SYSTEM \"shops.dtd\">\n"})
 
-(defn offer
-  [offer vendor-id]
-  [:offer {:id (:id offer) :available true}
-   [:url         {} (:url offer)]
-   [:name        {} (:title offer)]
-   [:picture     {} (:picture-url offer)]
-   [:description {} (:description offer)]
-   [:categoryId  {} (:category-id offer)]
-   [:currencyId  {} (:currency-iso-code offer)]
-   [:price       {} (:price offer)]
-   [:oldprice    {} (:oldprice offer)]
-   (params (:custom-attributes offer) vendor-id)])
+(defn offer-tree
+  [product vendor-id]
+  [:offer {:id (:id product) :available true}
+   [:url         {} (:url product)]
+   [:picture     {} (:picture-url product)]
+   [:name        {} (:title product)]
+   [:description {} (:description product)]
+   [:categoryId  {} (first (:categories-ids product))]
+   [:currencyId  {} (:price-currency product)]
+   [:price       {} (money/minor-units->major-units (:price-currency product)
+                                                    (:price-kopeks product))]
+   [:oldprice    {} (money/minor-units->major-units (:oldprice-currency product)
+                                                    (:oldprice-kopeks product))]
+   (params-nodes (:custom-attributes product) vendor-id)])
 
-(defn offers
+(defn offers-tree
   [vendor-id]
-  (let [offers (q/get-vendor-offers vendor-id)]
+  (let [products (queries/get-vendor-products vendor-id)]
     [:offers {}
-     (map #(offer % vendor-id) offers)]))
+     (map #(offer-tree % vendor-id) products)]))
 
-(defn delivery
-  [{:keys [cost]}]
-  [:option {:cost cost}])
+(defn delivery-node
+  [{:keys [price-currency price-kopeks]}]
+    [:option {:cost (money/minor-units->major-units price-currency price-kopeks)}])
 
-(defn deliveries
+(defn deliveries-tree
   [vendor-id]
-  (let [deliveries (q/get-vendor-not-pickup-deliveries vendor-id)]
-    [:delivery-options {} (map delivery deliveries)]))
+  (let [deliveries (queries/get-vendor-not-pickup-deliveries vendor-id)]
+    [:delivery-options {} (map delivery-node deliveries)]))
 
-(defn shop
+(defn shop-tree
   [vendor-id]
-  (let [vendor (q/get-vendor vendor-id)]
+  (let [vendor (queries/get-vendor vendor-id)]
     [:shop {}
      [:name     {} (:name vendor)]
      [:company  {} (:company-name vendor)]
@@ -50,19 +53,17 @@
      [:version  {} config/version]
      [:agency   {} config/agency]
      [:email    {} config/email]
-     (currencies (:currency-iso-code vendor))
-     (categories vendor-id)
-     (deliveries vendor-id)
-     (offers vendor-id)]))
+     (currencies-tree (:currency-iso-code vendor))
+     (categories-tree vendor-id)
+     (deliveries-tree vendor-id)
+     (offers-tree vendor-id)]))
 
-(defn yml-catalog
+(defn yml-catalog-tree
   [vendor-id]
-  (let [date (.format (java.text.SimpleDateFormat. "YYYY-MM-dd hh:mm")
-                      (java.util.Date.))]
-    [:yml_catalog {:date date} (shop-branch vendor-id)]))
+  [:yml_catalog {:date (date/format-date)} (shop-tree vendor-id)])
 
 (defn generate-tree
   [vendor-id]
   (str (xml-declaration "windows-1251")
        (:yandex-market doctype)
-       (html (yml-catalog vendor-id))))
+       (html (yml-catalog-tree vendor-id))))

@@ -1,11 +1,11 @@
 (ns generators.libs.params
-  (:require [generators.libs.queries :as q]))
+  (:require [libs.queries :as queries]))
 
-(defn params
-  [params-data vendor-id]
-  (for [param-data params-data
-        :let [param (q/get-vendor-property vendor-id (key param-data))
-              param-value (if (= (:type param) "PropertyDictionary")
-                            (:name (q/get-vendor-dictionary-entity vendor-id (val param-data)))
-                            (val param-data))]]
-    [:param {:name (:title param)} param-value]))
+(defn params-nodes
+  [custom-attributes vendor-id]
+  (for [custom-attribute custom-attributes
+        :let [property (queries/get-vendor-property vendor-id (key custom-attribute))
+              property-value (if (= (:type property) "PropertyDictionary")
+                               (:name (queries/get-vendor-dictionary-entity vendor-id (val custom-attribute)))
+                               (val custom-attribute))]]
+    [:param {:name (:title property)} property-value]))

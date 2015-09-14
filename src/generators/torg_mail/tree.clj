@@ -1,11 +1,13 @@
 (ns generators.torg-mail.tree
   (:require [hiccup.core :refer [html]]
             [hiccup.page :refer [xml-declaration]]
-            [generators.libs.money :as m]
-            [generators.libs.queries :as q]
-            [generators.libs.params :as params]
-            [generators.libs.categories :as categories]
-            [generators.libs.currencies :as currencies]
+            [libs.date :as date]
+            [libs.money :as money]
+            [libs.queries :as queries]
+            [libs.deliveries :as deliveries]
+            [generators.libs.params :refer [params-nodes]]
+            [generators.libs.currencies :refer [currencies-tree]]
+            [generators.libs.categories :refer [categories-tree]]
             [config]))
 
 ;; Описание формата и тонкости:
@@ -18,62 +20,48 @@
 ;; - offer[vendor]
 ;; - local_delivery_cost
 
-(defn offer-branch
-  [offer vendor-id]
-  [:offer {:id (:id offer) :available true}
-   [:url {} (:cached_public_url offer)]
-   [:picture {} (:cached_image_url offer)]
-   [:name {} (or (:title offer) (:stock_title offer))]
-   [:description {} (or (:description offer) (:stock_description offer))]
-   [:categoryId {} (first (:categories_ids offer))]
-   [:currencyId (:price_currency offer)]
-   (if (:is_sale offer)
-     [:price {} (m/minor-units->major-units (:sale_price_currency offer)
-                                            (:sale_price_kopeks offer))]
-     [:price {} (m/minor-units->major-units (:price_currency offer)
-                                            (:price_kopeks offer))])
-   (params/params-branch (:data offer) vendor-id)])
+(defn offer-tree
+  [product vendor-id]
+  [:offer {:id (:id product) :available true}
+   [:url         {} (:url product)]
+   [:picture     {} (:picture-url product)]
+   [:name        {} (:title product)]
+   [:description {} (:description product)]
+   [:categoryId  {} (first (:categories-ids product))]
+   [:currencyId  {} (:price-currency product)]
+   [:price       {} (money/minor-units->major-units (:price-currency product)
+                                                    (:price-kopeks product))]
+   (params-nodes (:custom-attributes product) vendor-id)])
 
-(defn offers-branch
+(defn offers-tree
   [vendor-id]
-  (let [offers (q/get-vendor-offers vendor-id)]
+  (let [products (queries/get-vendor-products vendor-id)]
     [:offers {}
-     (map #(offer-branch % vendor-id) offers)]))
+     (map #(offer-tree % vendor-id) products)]))
 
-(defn- has-deliveries?
-  [deliveries]
-  (-> deliveries count pos?))
-
-(defn- has-pickup?
-  [deliveries]
-  (some #(= (:delivery_agent_type %) "OrderDeliveryPickup")
-        deliveries))
-
-(defn deliveries-branch
+(defn deliveries-nodes
   [vendor-id]
-  (let [deliveries (q/get-vendor-deliveries vendor-id)]
-    (seq [[:delivery {} (has-deliveries? deliveries)]
-          [:pickup {} (has-pickup? deliveries)]])))
+  (let [deliveries (queries/get-vendor-deliveries vendor-id)]
+    (seq [[:delivery {} (deliveries/has-deliveries? deliveries)]
+          [:pickup {} (deliveries/has-pickup? deliveries)]])))
 
-(defn shop-branch
+(defn shop-tree
   [vendor-id]
-  (let [vendor (q/get-vendor vendor-id)]
+  (let [vendor (queries/get-vendor vendor-id)]
     [:shop {}
-     [:name {} (:name vendor)]
-     [:company {} (:company_name vendor)]
-     [:url {} (:cached_home_url vendor)]
-     (currencies/currencies-branch (:currency_iso_code vendor))
-     (categories/categories-branch vendor-id)
-     (deliveries-branch vendor-id)
-     (offers-branch vendor-id)]))
+     [:name     {} (:name vendor)]
+     [:company  {} (:company-name vendor)]
+     [:url      {} (:url vendor)]
+     (currencies-tree (:currency-iso-code vendor))
+     (categories-tree vendor-id)
+     (deliveries-nodes vendor-id)
+     (offers-tree vendor-id)]))
 
-(defn torg-price-branch
+(defn torg-price-tree
   [vendor-id]
-  (let [date (.format (java.text.SimpleDateFormat. "YYYY-MM-dd hh:mm")
-                      (java.util.Date.))]
-    [:torg_price {:date date} (shop-branch vendor-id)]))
+  [:torg_price {:date (date/format-date)} (shop-tree vendor-id)])
 
 (defn generate-tree
   [vendor-id]
   (str (xml-declaration "windows-1251")
-       (html (torg-price-branch vendor-id))))
+       (html (torg-price-tree vendor-id))))
