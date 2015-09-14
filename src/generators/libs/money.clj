@@ -1,4 +1,4 @@
-(ns generators.utils.money
+(ns generators.libs.money
   "Functions for processing funding operations")
 
 ;; TODO: Migrate to https://github.com/clojurewerkz/money

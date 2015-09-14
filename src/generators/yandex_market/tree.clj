@@ -1,21 +1,15 @@
 (ns generators.yandex-market.tree
   (:require [hiccup.core :refer [html]]
             [hiccup.page :refer [xml-declaration]]
-            [generators.utils.money :as m]
-            [generators.utils.queries :as q]
+            [generators.libs.money :as m]
+            [generators.libs.queries :as q]
+            [generators.libs.params :as params]
+            [generators.libs.categories :as categories]
+            [generators.libs.currencies :as currencies]
             [config]))
 
 (def ^:private doctype
   {:yandex-market "<!DOCTYPE yml_catalog SYSTEM \"shops.dtd\">\n"})
-
-(defn params-branch
-  [params-data vendor-id]
-  (for [param-data params-data
-        :let [param (q/get-vendor-property vendor-id (key param-data))
-              param-value (if (= (:type param) "PropertyDictionary")
-                            (:name (q/get-vendor-dictionary-entity vendor-id (val param-data)))
-                            (val param-data))]]
-    [:param {:name (:title param)} param-value]))
 
 (defn offer-branch
   [offer vendor-id]
@@ -34,7 +28,7 @@
    (when (:is_sale offer)
      [:oldprice {} (m/minor-units->major-units (:price_currency offer)
                                                (:price_kopeks offer))])
-   (params-branch (:data offer) vendor-id)])
+   (params/params-branch (:data offer) vendor-id)])
 
 (defn offers-branch
   [vendor-id]
@@ -51,27 +45,6 @@
   (let [deliveries (q/get-vendor-not-pickup-deliveries vendor-id)]
     [:delivery-options {} (map delivery-branch deliveries)]))
 
-(defn- ancestors-count
-  [{:keys [ancestry]}]
-  (count (when ancestry (re-seq #"[\d]*[\d]" ancestry))))
-
-(defn category-branch
-  [{:keys [id name ancestry]}]
-  (let [parent-id (when ancestry (re-find #"\d*$" ancestry))]
-    [:category {:id id :parentId parent-id} name]))
-
-(defn categories-branch
-  [vendor-id]
-  (let [categories (q/get-vendor-categories vendor-id)]
-    [:categories {}
-     (map category-branch (sort-by ancestors-count categories))]))
-
-(defn currencies-branch
-  [currency]
-  (let [rate (m/get-currency-rate currency)]
-    [:currencies {}
-     [:currency {:id currency :rate rate}]]))
-
 (defn shop-branch
   [vendor-id]
   (let [vendor (q/get-vendor vendor-id)]
@@ -83,8 +56,8 @@
      [:version {} config/version]
      [:agency {} config/agency]
      [:email {} config/email]
-     (currencies-branch (:currency_iso_code vendor))
-     (categories-branch vendor-id)
+     (currencies/currencies-branch (:currency_iso_code vendor))
+     (categories/categories-branch vendor-id)
      (deliveries-branch vendor-id)
      (offers-branch vendor-id)]))
 
