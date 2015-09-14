@@ -2,16 +2,16 @@
   (:require [generators.libs.queries :as q]))
 
 (defn- ancestors-count
-  [{:keys [ancestry]}]
+  [ancestry]
   (count (when ancestry (re-seq #"[\d]*[\d]" ancestry))))
 
-(defn category-branch
+(defn category
   [{:keys [id name ancestry]}]
   (let [parent-id (when ancestry (re-find #"\d*$" ancestry))]
     [:category {:id id :parentId parent-id} name]))
 
-(defn categories-branch
+(defn categories
   [vendor-id]
   (let [categories (q/get-vendor-categories vendor-id)]
     [:categories {}
-     (map category-branch (sort-by ancestors-count categories))]))
+     (map category (sort-by #(ancestors-count (:ancestry %)) categories))]))

@@ -1,7 +1,7 @@
 (ns generators.libs.params
   (:require [generators.libs.queries :as q]))
 
-(defn params-branch
+(defn params
   [params-data vendor-id]
   (for [param-data params-data
         :let [param (q/get-vendor-property vendor-id (key param-data))

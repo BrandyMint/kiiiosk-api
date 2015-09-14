@@ -1,4 +1,4 @@
-(ns generators.libs.queries
+(ns libs.queries
   (:require [config :refer [query]]))
 
 (defn get-vendor

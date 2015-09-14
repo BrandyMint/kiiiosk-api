@@ -3,65 +3,59 @@
             [hiccup.page :refer [xml-declaration]]
             [generators.libs.money :as m]
             [generators.libs.queries :as q]
-            [generators.libs.params :as params]
-            [generators.libs.categories :as categories]
-            [generators.libs.currencies :as currencies]
+            [generators.libs.params :refer [params]]
+            [generators.libs.categories :refer [categories]]
+            [generators.libs.currencies :refer [currencies]]
             [config]))
 
 (def ^:private doctype
   {:yandex-market "<!DOCTYPE yml_catalog SYSTEM \"shops.dtd\">\n"})
 
-(defn offer-branch
+(defn offer
   [offer vendor-id]
   [:offer {:id (:id offer) :available true}
-   [:url {} (:cached_public_url offer)]
-   [:picture {} (:cached_image_url offer)]
-   [:name {} (or (:title offer) (:stock_title offer))]
-   [:description {} (or (:description offer) (:stock_description offer))]
-   [:categoryId {} (first (:categories_ids offer))]
-   [:currencyId (:price_currency offer)]
-   (if (:is_sale offer)
-     [:price {} (m/minor-units->major-units (:sale_price_currency offer)
-                                            (:sale_price_kopeks offer))]
-     [:price {} (m/minor-units->major-units (:price_currency offer)
-                                            (:price_kopeks offer))])
-   (when (:is_sale offer)
-     [:oldprice {} (m/minor-units->major-units (:price_currency offer)
-                                               (:price_kopeks offer))])
-   (params/params-branch (:data offer) vendor-id)])
+   [:url         {} (:url offer)]
+   [:name        {} (:title offer)]
+   [:picture     {} (:picture-url offer)]
+   [:description {} (:description offer)]
+   [:categoryId  {} (:category-id offer)]
+   [:currencyId  {} (:currency-iso-code offer)]
+   [:price       {} (:price offer)]
+   [:oldprice    {} (:oldprice offer)]
+   (params (:custom-attributes offer) vendor-id)])
 
-(defn offers-branch
+(defn offers
   [vendor-id]
   (let [offers (q/get-vendor-offers vendor-id)]
     [:offers {}
-     (map #(offer-branch % vendor-id) offers)]))
+     (map #(offer % vendor-id) offers)]))
 
-(defn delivery-branch
-  [{:keys [price_currency price_kopeks]}]
-    [:option {:cost (m/minor-units->major-units price_currency price_kopeks)}])
+(defn delivery
+  [{:keys [cost]}]
+  [:option {:cost cost}])
 
-(defn deliveries-branch
+(defn deliveries
   [vendor-id]
   (let [deliveries (q/get-vendor-not-pickup-deliveries vendor-id)]
-    [:delivery-options {} (map delivery-branch deliveries)]))
+    [:delivery-options {} (map delivery deliveries)]))
 
-(defn shop-branch
+(defn shop
   [vendor-id]
   (let [vendor (q/get-vendor vendor-id)]
     [:shop {}
-     [:name {} (:name vendor)]
-     [:company {} (:company_name vendor)]
-     [:url {} (:cached_home_url vendor)]
+     [:name     {} (:name vendor)]
+     [:company  {} (:company-name vendor)]
+     [:url      {} (:url vendor)]
      [:platform {} config/platform]
-     [:version {} config/version]
-     [:agency {} config/agency]
-     [:email {} config/email]
-     (currencies/currencies-branch (:currency_iso_code vendor))
-     (categories/categories-branch vendor-id)
-     (deliveries-branch vendor-id)
-     (offers-branch vendor-id)]))
+     [:version  {} config/version]
+     [:agency   {} config/agency]
+     [:email    {} config/email]
+     (currencies (:currency-iso-code vendor))
+     (categories vendor-id)
+     (deliveries vendor-id)
+     (offers vendor-id)]))
 
-(defn yml-catalog-branch
+(defn yml-catalog
   [vendor-id]
   (let [date (.format (java.text.SimpleDateFormat. "YYYY-MM-dd hh:mm")
                       (java.util.Date.))]
@@ -71,4 +65,4 @@
   [vendor-id]
   (str (xml-declaration "windows-1251")
        (:yandex-market doctype)
-       (html (yml-catalog-branch vendor-id))))
+       (html (yml-catalog vendor-id))))
