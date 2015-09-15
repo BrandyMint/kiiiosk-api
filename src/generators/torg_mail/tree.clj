@@ -4,10 +4,10 @@
             [libs.date :as date]
             [libs.money :as money]
             [libs.queries :as queries]
-            [libs.deliveries :as deliveries]
-            [generators.libs.params :refer [params-nodes]]
-            [generators.libs.currencies :refer [currencies-tree]]
-            [generators.libs.categories :refer [categories-tree]]
+            [libs.deliveries :refer [delivery-has-pickup? delivery-has-deliveries?]]
+            [generators.libs.params :refer [params]]
+            [generators.libs.currencies :refer [currencies]]
+            [generators.libs.categories :refer [categories]]
             [config]))
 
 ;; Описание формата и тонкости:
@@ -20,7 +20,9 @@
 ;; - offer[vendor]
 ;; - local_delivery_cost
 
-(defn offer-tree
+(defn offer
+  "Принимает сущность типа Product и идентификатор продавца (vendor-id)
+  и возвращает hiccup-представление offer"
   [product vendor-id]
   [:offer {:id (:id product) :available true}
    [:url         {} (:url product)]
@@ -29,39 +31,48 @@
    [:description {} (:description product)]
    [:categoryId  {} (first (:categories-ids product))]
    [:currencyId  {} (:price-currency product)]
-   [:price       {} (money/minor-units->major-units (:price-currency product)
-                                                    (:price-kopeks product))]
-   (params-nodes (:custom-attributes product) vendor-id)])
+   [:price       {} (money/minor-units->major-units (:price product))]
+   (params (:custom-attributes product) vendor-id)])
 
-(defn offers-tree
+(defn offers
+  "Принимает идентификатор продавца (vendor-id) получает список его продуктов,
+  и возвращает hiccup-представление offers"
   [vendor-id]
   (let [products (queries/get-vendor-products vendor-id)]
     [:offers {}
-     (map #(offer-tree % vendor-id) products)]))
+     (map #(offer % vendor-id) products)]))
 
-(defn deliveries-nodes
+(defn deliveries
+  "Принимает идентификатор продавца (vendor-id) получает список его доставок,
+  и возвращает hiccup-представление элементов delivery и pickup"
   [vendor-id]
   (let [deliveries (queries/get-vendor-deliveries vendor-id)]
-    (seq [[:delivery {} (deliveries/has-deliveries? deliveries)]
-          [:pickup {} (deliveries/has-pickup? deliveries)]])))
+    (seq [[:delivery {} (delivery-has-deliveries? deliveries)]
+          [:pickup   {} (delivery-has-pickup? deliveries)]])))
 
-(defn shop-tree
+(defn shop
+  "Принимает идентификатор продавца (vendor-id) получает данные о нём, и возвращает
+  hiccup-представление shop"
   [vendor-id]
   (let [vendor (queries/get-vendor vendor-id)]
     [:shop {}
-     [:name     {} (:name vendor)]
-     [:company  {} (:company-name vendor)]
-     [:url      {} (:url vendor)]
-     (currencies-tree (:currency-iso-code vendor))
-     (categories-tree vendor-id)
-     (deliveries-nodes vendor-id)
-     (offers-tree vendor-id)]))
+     [:name    {} (:name vendor)]
+     [:company {} (:company-name vendor)]
+     [:url     {} (:url vendor)]
+     (currencies (:currency-iso-code vendor))
+     (categories vendor-id)
+     (deliveries vendor-id)
+     (offers vendor-id)]))
 
-(defn torg-price-tree
+(defn torg-price
+  "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
+  torg_price"
   [vendor-id]
-  [:torg_price {:date (date/format-date)} (shop-tree vendor-id)])
+  [:torg_price {:date (date/format-date)} (shop vendor-id)])
 
 (defn generate-tree
+  "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
+  всего дерева тегов"
   [vendor-id]
   (str (xml-declaration "windows-1251")
-       (html (torg-price-tree vendor-id))))
+       (html (torg-price vendor-id))))

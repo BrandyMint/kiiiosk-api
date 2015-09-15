@@ -3,9 +3,9 @@
 
 ;; TODO: Migrate to https://github.com/clojurewerkz/money
 (defn minor-units->major-units
-  [currency minor-units]
+  [{:keys [currency kopeks]}]
   (if (= "RUB" currency)
-    (/ minor-units 100)
+    (/ kopeks 100)
     (throw (Exception. "Only \"RUB\" currency supported!"))))
 
 (defn get-currency-rate

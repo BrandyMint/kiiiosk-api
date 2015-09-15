@@ -1,7 +1,9 @@
 (ns generators.libs.params
   (:require [libs.queries :as queries]))
 
-(defn params-nodes
+(defn params
+  "Принимает хеш custom-attributes и идентификатор продавца (vendor-id) и
+  возвращает hiccup-представление param."
   [custom-attributes vendor-id]
   (for [custom-attribute custom-attributes
         :let [property (queries/get-vendor-property vendor-id (key custom-attribute))
