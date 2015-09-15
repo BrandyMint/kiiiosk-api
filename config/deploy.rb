@@ -3,12 +3,14 @@ lock '3.3.5'
 set :scm, :git
 set :repo_url, 'git@github.com:BrandyMint/kiiiosk-open-api.git'
 set :keep_releases, 5
+set :linked_files, %w(profiles.clj)
+set :linked_dirs, %w(log)
+
 set :branch, ENV['BRANCH'] || 'master'
 namespace :deploy do
   task  :leinclean do
     on roles :all do
       within current_path do
-      	execute "cd #{current_path} && ln -s profiles.clj.example profiles.clj"
         execute "cd #{current_path} && lein do clean"
       end
     end
