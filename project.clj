@@ -13,6 +13,7 @@
                  [prismatic/schema "0.4.4"]
                  [metosin/compojure-api "0.23.1"]
                  [environ "1.0.0"]
+                 [com.novemberain/langohr "3.3.0"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jmdk/jmxtools
@@ -22,7 +23,6 @@
   :uberjar-name "server.jar"
   :profiles {:dev [:development {:dependencies [[javax.servlet/servlet-api "2.5"]
                                                 [org.clojure/tools.trace "0.7.5"]
-                                                [com.novemberain/langohr "3.3.0"]
                                                 [cheshire "5.3.1"]
                                                 [ring-mock "0.1.5"]
                                                 [ring/ring-jetty-adapter "1.4.0"]]
