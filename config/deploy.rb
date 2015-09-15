@@ -8,6 +8,7 @@ namespace :deploy do
   task  :leinclean do
     on roles :all do
       within current_path do
+      	execute "cd #{current_path} && ln -s profiles.clj.example profiles.clj"
         execute "cd #{current_path} && lein do clean"
       end
     end
@@ -24,7 +25,7 @@ namespace :deploy do
   task  :leinuberwar do
     on roles :all do
       within current_path do
-        execute "cd #{current_path} && lein ring uberwar"
+        execute "cd #{current_path} && lein ring uberjar"
       end
     end
   end

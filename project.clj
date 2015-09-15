@@ -2,6 +2,8 @@
   :description "Kiosk public API"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/java.jdbc "0.4.1"]
+                 [org.clojure/tools.logging "0.3.1"]
+                 [org.slf4j/slf4j-log4j12 "1.7.12"]
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
                  [clj-http "1.0.1"] ; https://github.com/dakrone/clj-http/issues/238
                  [clj-bugsnag "0.2.3"]
@@ -10,7 +12,11 @@
                  [hiccup "1.0.5"]
                  [prismatic/schema "0.4.4"]
                  [metosin/compojure-api "0.23.1"]
-                 [environ "1.0.0"]]
+                 [environ "1.0.0"]
+                 [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
+                                                    javax.jms/jms
+                                                    com.sun.jmdk/jmxtools
+                                                    com.sun.jmx/jmxri]]]
   :plugins [[lein-environ "1.0.0"]]
   :ring {:handler kiosk-open-api.handler/app}
   :uberjar-name "server.jar"

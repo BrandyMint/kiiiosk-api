@@ -31,6 +31,14 @@ lein with-profile dev repl ;; Запускается repl с профилем de
 Команда:
 `lein run -m commands.yandex-market $VENDOR_ID`
 
+Генерация мейл-каталога
+
+Запуск:
+`lein run -m workers.torg-mail`
+
+Команда:
+`lein run -m commands.torg-mail $VENDOR_ID`
+
 ### Run the tests
 
 `lein test`

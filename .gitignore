@@ -1,5 +1,7 @@
 *-port
 /target/*
+/tmp/*
+/log/*
 .lein*
 .capistrano
 .DS_Store
