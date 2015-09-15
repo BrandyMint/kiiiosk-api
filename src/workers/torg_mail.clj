@@ -8,28 +8,13 @@
             [generators.torg-mail.core :refer [generate]]
             [config :refer [tmail-qname tmail-output-path]]))
 
-(defn notify-generation-start
-  [vendor-id output-path]
-  (-> (format "[start] Generating Torg.Mail (vendorID %d, directory %s)"
-              vendor-id
-              output-path)
-      log/info))
-
-(defn notify-generation-finish
-  [vendor-id output-path]
-  (-> (format "[finish] Generating Torg.Mail (vendorID %d, directory %s)"
-              vendor-id
-              output-path)
-      log/info))
-
 (defn handle-generate-task
   [ch metadata ^bytes payload]
   (let [vendor-id (Long. (String. payload "UTF-8"))
         output-path (tmail-output-path vendor-id)]
     (future
-      (notify-generation-start vendor-id output-path)
-      (generate vendor-id output-path)
-      (notify-generation-finish vendor-id output-path))))
+      (try (generate vendor-id output-path)
+        (catch Exception e (log/error e))))))
 
 (defn -main
   [& args]
@@ -37,5 +22,5 @@
     (let [ch (lch/open conn)]
       (lq/declare ch tmail-qname {:durable true :auto-delete false})
       (lb/qos ch 1)
-      (log/debug " [*] Waiting for messages. To exit press CTRL+C")
+      (log/debug "[*] Waiting for messages. To exit press CTRL+C")
       (lcons/blocking-subscribe ch tmail-qname handle-generate-task {:auto-ack true}))))
