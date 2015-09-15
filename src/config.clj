@@ -1,9 +1,10 @@
 (ns config
   "Globally used configuration data"
-  (:require [clojurewerkz.elastisch.rest :refer [connect]]
-            [clj-postgresql.core :as pg]
-            [clojure.java.jdbc :as sql]
+  (:require [clojure.java.jdbc :as sql]
             [clojure.string :as s]
+            [clojurewerkz.elastisch.rest :refer [connect]]
+            [clj-postgresql.core :as pg]
+            [langohr.core :as lc]
             [environ.core :refer [env]]))
 
 ;; JDBC
@@ -24,17 +25,25 @@
 (def version "1.0")
 
 ;; RabbitMQ
+(def rb-params {:uri (env :rabbitmq-uri)})
+(def rb-connect (partial lc/connect rb-params))
+
 (def ^{:const true} default-exchange-name "")
 (def ^{:const true} ymarket-qname "yandex_market_queue")
-(def ^{:const true} ymarket-yml-output-pattern "./tmp/:vendor-id/yandex_market.yml")
 (def ^{:const true} tmail-qname "torg_mail_queue")
-(def ^{:const true} tmail-output-pattern "./tmp/:vendor-id/torg_mail.xml")
+(def ^{:const true} vendor-assets-path (env :vendor-assets-path))
+(def ^{:const true} ymarket-filename (env :ymarket-filename))
+(def ^{:const true} tmail-filename (env :tmail-filename))
 
 ;; Helpers
 (defn ymarket-output-path
   [vendor-id]
-  (s/replace ymarket-yml-output-pattern #":vendor-id" (str vendor-id)))
+  (str (s/replace vendor-assets-path #":vendor-id" (str vendor-id))
+       "/"
+       ymarket-filename))
 
 (defn tmail-output-path
   [vendor-id]
-  (s/replace tmail-output-pattern #":vendor-id" (str vendor-id)))
+  (str (s/replace vendor-assets-path #":vendor-id" (str vendor-id))
+       "/"
+       tmail-filename))

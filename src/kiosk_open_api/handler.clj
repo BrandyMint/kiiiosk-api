@@ -33,7 +33,9 @@
       :path-params [vendor-id :- Long]
       :summary "Makes YML-file"
       (let [output-path (ymarket-output-path vendor-id)]
-        (future (generate vendor-id output-path))
+        (future
+          (try (generate vendor-id output-path)
+            (catch Exception e (log/error e))))
         (ok "Generation started"))))
 
   (context* "/products" []
