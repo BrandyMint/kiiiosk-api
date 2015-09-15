@@ -3,16 +3,28 @@
                      :pgport 5432
                      :pguser "postgres"
                      :pgpassword ""
-                     :pgdatabase "kiiiosk_development"}}
+                     :pgdatabase "kiiiosk_development"
+                     :rabbitmq-uri "amqp://guest:guest@localhost:5672/%2f"
+                     :vendor-assets-path "./tmp/:vendor-id"
+                     :ymarket-filename "yandex_catalog.yml"
+                     :tmail-filename "tmail_catalog.xml"}}
  :production  {:env {:production? true
                      :pghost "localhost"
                      :pgport 5432
                      :pguser "postgres"
                      :pgpassword ""
-                     :pgdatabase "kormilica_test"}}
+                     :pgdatabase "kormilica_test"
+                     :rabbitmq-uri "amqp://guest:guest@localhost:5672/%2f"
+                     :vendor-assets-path "./tmp/:vendor-id"
+                     :ymarket-filename "yandex_catalog.yml"
+                     :tmail-filename "tmail_catalog.xml"}}
  :test        {:env {:test? true
                      :pghost "localhost"
                      :pgport 5432
                      :pguser "postgres"
                      :pgpassword ""
-                     :pgdatabase "kormilica_test"}}}
+                     :pgdatabase "kormilica_test"
+                     :rabbitmq-uri "amqp://guest:guest@localhost:5672/%2f"
+                     :vendor-assets-path "./tmp/:vendor-id"
+                     :ymarket-filename "yandex_catalog.yml"
+                     :tmail-filename "tmail_catalog.xml"}}}
