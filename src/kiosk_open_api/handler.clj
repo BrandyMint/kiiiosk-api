@@ -1,5 +1,6 @@
 (ns kiosk-open-api.handler
-  (:require [ring.util.http-response :refer [ok]]
+  (:require [clojure.tools.logging :as log]
+            [ring.util.http-response :refer [ok]]
             [compojure.api.sweet :refer :all]
             [clj-bugsnag.ring :refer [wrap-bugsnag]]
             [generators.yandex-market.core :refer [generate]]
