@@ -2,10 +2,10 @@
   (:require [ring.util.http-response :refer [ok]]
             [compojure.api.sweet :refer :all]
             [clj-bugsnag.ring :refer [wrap-bugsnag]]
-            [generate-yml.core :refer [generate-yml]]
+            [generators.yandex-market.core :refer [generate]]
             [kiosk-open-api.schemas :refer [ProductCard]]
             [kiosk-open-api.utils :refer :all]
-            [config :refer [ymarket-qname ymarket-yml-output-path]]))
+            [config :refer [ymarket-qname ymarket-output-path]]))
 
 (defn -main [& args])
 
@@ -32,8 +32,8 @@
     (POST* "/:vendor-id" []
       :path-params [vendor-id :- Long]
       :summary "Makes YML-file"
-      (let [output-path (ymarket-yml-output-path vendor-id)]
-        (future (generate-yml vendor-id output-path))
+      (let [output-path (ymarket-output-path vendor-id)]
+        (future (generate vendor-id output-path))
         (ok "Generation started"))))
 
   (context* "/products" []
