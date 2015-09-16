@@ -1,12 +1,10 @@
 (ns kiosk-open-api.handler
   (:require [clojure.tools.logging :as log]
-            [ring.util.http-response :refer [ok]]
             [compojure.api.sweet :refer :all]
+            [ring.util.http-response :refer :all]
             [clj-bugsnag.ring :refer [wrap-bugsnag]]
-            [generators.yandex-market.core :refer [generate]]
-            [kiosk-open-api.schemas :refer [ProductCard]]
-            [kiosk-open-api.utils :refer :all]
-            [config :refer [ymarket-qname ymarket-output-path]]))
+            [commands.torg-mail :as torg-mail]
+            [commands.yandex-market :as yandex-market]))
 
 (defn -main [& args])
 
@@ -16,37 +14,18 @@
 
 (defapi app
   (swagger-ui)
-  (swagger-docs
-    {:info {:title "kiiiosk open api"}})
+  (swagger-docs {:info {:title "kiiiosk open api"}})
 
-  (GET* "/" []
-    :no-doc true
-    (ok "hello world"))
+  (context* "/vendors" []
+    :tags ["vendors"]
 
-  (GET* "/ping" []
-    :return {:response String}
-    :summary "Ping test"
-    (ok {:response "Ok. Pong.."}))
+    (POST* "/:vendor-id/yandex-market" [vendor-id]
+      :summary "Generate yandex-market YML-catalog"
+      (accepted (yandex-market/start-generate vendor-id)))
 
-  (context* "/yandex-market" []
-
-    (POST* "/:vendor-id" []
-      :path-params [vendor-id :- Long]
-      :summary "Makes YML-file"
-      (let [output-path (ymarket-output-path vendor-id)]
-        (future
-          (try (generate vendor-id output-path)
-            (catch Exception e (log/error e))))
-        (ok "Generation started"))))
-
-  (context* "/products" []
-    :tags ["products"]
-
-    (GET* "/:id" []
-      :return ProductCard
-      :path-params [id :- Long]
-      :summary "Gets product"
-      (ok (get-coerced-esd "product" ProductCard id)))))
+    (POST* "/:vendor-id/torg-mail" [vendor-id]
+      :summary "Generate torg-mail XML-catalog"
+      (accepted (torg-mail/start-generate vendor-id)))))
 
 (wrap-bugsnag
   app
