@@ -13,12 +13,13 @@
 (def ^:private doctype
   {:yandex-market "<!DOCTYPE yml_catalog SYSTEM \"shops.dtd\">\n"})
 
-(defn offer
+(defn offer-markup
   "Принимает сущность типа Product и идентификатор продавца (vendor-id)
   и возвращает hiccup-представление offer"
   [product vendor-id]
   (log/info (str "Processing offer with ID " (:id product)))
-  [:offer {:id (:id product) :available "true"}
+  [:offer {:id (:id product)
+           :available "true"}
    [:url         {} (:url product)]
    [:picture     {} (:picture-url product)]
    [:name        {} (:title product)]
@@ -26,19 +27,18 @@
    [:categoryId  {} (first (:categories-ids product))]
    [:currencyId  {} (money/get-currency (:price product))]
    [:price       {} (money/minor-units->major-units (:price product))]
-   (if (not= (:price product) (:oldprice product))
-     [:oldprice  {} (money/minor-units->major-units (:oldprice product))])
+   (when (money/has-different-values? (:price product) (:oldprice product))
+     [:oldprice {} (money/minor-units->major-units (:oldprice product))])
    (params (:custom-attributes product) vendor-id)])
 
-(defn offers
+(defn offers-markup
   "Принимает идентификатор продавца (vendor-id) получает список его продуктов,
   и возвращает hiccup-представление offers"
   [vendor-id]
   (log/info "Processing offers")
   (let [products (queries/get-vendor-products vendor-id)]
-    (when-not (= (count products) 0)
-      [:offers {}
-       (map #(offer % vendor-id) products)])))
+    [:offers {}
+     (map #(offer-markup % vendor-id) products)]))
 
 (defn delivery
   "Принимает сущность типа Delivery, и возвращает hiccup-представление элемента
@@ -72,7 +72,7 @@
      (currencies (:currency-iso-code vendor))
      (categories vendor-id)
      (deliveries vendor-id)
-     (offers vendor-id)]))
+     (offers-markup vendor-id)]))
 
 (defn yml-catalog
   "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление

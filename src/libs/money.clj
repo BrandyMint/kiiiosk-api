@@ -17,3 +17,11 @@
 (defn get-currency
   [{:keys [currency]}]
   currency)
+
+(defn get-value
+  [{:keys [kopeks]}]
+  kopeks)
+
+(defn has-different-values?
+  [money money2]
+  (not= (get-value money) (get-value money2)))
