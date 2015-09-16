@@ -16,7 +16,7 @@
   [vendor-id]
   (log/info "Processing categories")
   (let [categories (queries/get-vendor-categories vendor-id)]
-    [:categories {}
+    [:categories
      (map category
           (sort-by #(categories/ancestors-count (:ancestry %))
                    categories))]))

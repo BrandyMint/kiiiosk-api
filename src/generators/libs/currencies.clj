@@ -7,5 +7,5 @@
   [currency_iso_code]
   (log/info "Processing categories")
   (let [rate (money/get-currency-rate currency_iso_code)]
-    [:currencies {}
+    [:currencies
      [:currency {:id currency_iso_code :rate rate}]]))

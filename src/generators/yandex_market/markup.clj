@@ -1,6 +1,6 @@
 (ns generators.yandex-market.markup
   (:require [clojure.tools.logging :as log]
-            [hiccup.core :refer [html]]
+            [hiccup.core :refer [html h]]
             [hiccup.page :refer [xml-declaration]]
             [libs.date :as date]
             [libs.money :as money]
@@ -19,18 +19,18 @@
   [product vendor-id]
   (log/info (str "Processing offer with ID " (:id product)))
   [:offer {:id (:id product) :available "true"}
-   [:url        {} (:url product)]
-   [:name       {} (:title product)]
-   [:categoryId {} (first (:categories-ids product))]
-   [:price      {} (money/minor-units->major-units (:price product))]
-   [:currencyId {} (money/get-currency (:price product))]
+   [:url (:url product)]
+   [:name (h (:title product))]
+   [:categoryId (first (:categories-ids product))]
+   [:price (money/minor-units->major-units (:price product))]
+   [:currencyId (money/get-currency (:price product))]
    (when (:picture-url product)
-     [:picture {} (:picture-url product)])
+     [:picture (:picture-url product)])
    (when (:description product)
-     [:description {} (:description product)])
+     [:description (h (:description product))])
    (when (money/has-different-values? (:price product)
                                       (:oldprice product))
-     [:oldprice {} (money/minor-units->major-units (:oldprice product))])
+     [:oldprice (money/minor-units->major-units (:oldprice product))])
    (params (:custom-attributes product) vendor-id)])
 
 (defn offers-markup
@@ -39,8 +39,7 @@
   [vendor-id]
   (log/info "Processing offers")
   (let [products (queries/get-vendor-products vendor-id)]
-    [:offers {}
-     (map #(offer-markup % vendor-id) products)]))
+    [:offers (map #(offer-markup % vendor-id) products)]))
 
 (defn delivery-markup
   "Принимает сущность типа Delivery, и возвращает hiccup-представление элемента
@@ -55,7 +54,7 @@
   [vendor-id]
   (log/info "Processing deliveries")
   (let [deliveries (queries/get-vendor-not-pickup-deliveries vendor-id)]
-    [:delivery-options {} (map delivery-markup deliveries)]))
+    [:delivery-options (map delivery-markup deliveries)]))
 
 (defn shop-markup
   "Принимает идентификатор продавца (vendor-id) получает данные о нём, и возвращает
@@ -63,14 +62,14 @@
   [vendor-id]
   (log/info (str "Processing shop with ID " vendor-id))
   (let [vendor (queries/get-vendor vendor-id)]
-    [:shop {}
-     [:name     {} (:name vendor)]
-     [:company  {} (:company-name vendor)]
-     [:url      {} (:url vendor)]
-     [:platform {} config/platform]
-     [:version  {} config/version]
-     [:agency   {} config/agency]
-     [:email    {} config/email]
+    [:shop
+     [:name (:name vendor)]
+     [:company (:company-name vendor)]
+     [:url (:url vendor)]
+     [:platform config/platform]
+     [:version config/version]
+     [:agency config/agency]
+     [:email config/email]
      (currencies (:currency-iso-code vendor))
      (categories vendor-id)
      (deliveries-markup vendor-id)
