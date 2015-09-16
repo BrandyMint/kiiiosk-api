@@ -1,4 +1,4 @@
-(ns generators.yandex-market.tree
+(ns generators.yandex-market.markup
   (:require [clojure.tools.logging :as log]
             [hiccup.core :refer [html]]
             [hiccup.page :refer [xml-declaration]]
@@ -18,16 +18,19 @@
   и возвращает hiccup-представление offer"
   [product vendor-id]
   (log/info (str "Processing offer with ID " (:id product)))
-  [:offer {:id (:id product)
-           :available "true"}
-   [:url         {} (:url product)]
-   [:picture     {} (:picture-url product)]
-   [:name        {} (:title product)]
-   [:description {} (:description product)]
-   [:categoryId  {} (first (:categories-ids product))]
-   [:currencyId  {} (money/get-currency (:price product))]
-   [:price       {} (money/minor-units->major-units (:price product))]
-   (when (money/has-different-values? (:price product) (:oldprice product))
+  [:offer {:id (:id product) :available "true"}
+   [:name       {} (:title product)]
+   [:categoryId {} (first (:categories-ids product))]
+   [:price      {} (money/minor-units->major-units (:price product))]
+   [:currencyId {} (money/get-currency (:price product))]
+   (when (:url product)
+     [:url {} (:url product)])
+   (when (:picture-url product)
+     [:picture {} (:picture-url product)])
+   (when (:description product)
+     [:description {} (:description product)])
+   (when (money/has-different-values? (:price product)
+                                      (:oldprice product))
      [:oldprice {} (money/minor-units->major-units (:oldprice product))])
    (params (:custom-attributes product) vendor-id)])
 
@@ -40,22 +43,22 @@
     [:offers {}
      (map #(offer-markup % vendor-id) products)]))
 
-(defn delivery
+(defn delivery-markup
   "Принимает сущность типа Delivery, и возвращает hiccup-представление элемента
   option"
   [{:keys [id price]}]
   (log/info (str "Processing delivery with ID " id))
   [:option {:cost (money/minor-units->major-units price)}])
 
-(defn deliveries
+(defn deliveries-markup
   "Принимает идентификатор продавца (vendor-id) получает список его доставок,
   и возвращает hiccup-представление элементов delivery и pickup"
   [vendor-id]
   (log/info "Processing deliveries")
   (let [deliveries (queries/get-vendor-not-pickup-deliveries vendor-id)]
-    [:delivery-options {} (map delivery deliveries)]))
+    [:delivery-options {} (map delivery-markup deliveries)]))
 
-(defn shop
+(defn shop-markup
   "Принимает идентификатор продавца (vendor-id) получает данные о нём, и возвращает
   hiccup-представление shop"
   [vendor-id]
@@ -71,20 +74,20 @@
      [:email    {} config/email]
      (currencies (:currency-iso-code vendor))
      (categories vendor-id)
-     (deliveries vendor-id)
+     (deliveries-markup vendor-id)
      (offers-markup vendor-id)]))
 
-(defn yml-catalog
+(defn yml-catalog-markup
   "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
   yml_catalog"
   [vendor-id]
   (log/info "Processing yml_catalog")
-  [:yml_catalog {:date (date/format-date)} (shop vendor-id)])
+  [:yml_catalog {:date (date/format-date)} (shop-markup vendor-id)])
 
-(defn generate-tree
+(defn generate-markup
   "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
   всего дерева тегов"
   [vendor-id]
   (str (xml-declaration "UTF-8")
        (:yandex-market doctype)
-       (html (yml-catalog vendor-id))))
+       (html (yml-catalog-markup vendor-id))))
