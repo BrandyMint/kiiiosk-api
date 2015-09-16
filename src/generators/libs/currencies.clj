@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [libs.money :as money]))
 
-(defn currencies
+(defn currencies-markup
   "Принимает код валюты и возвращает hiccup-представление currencies."
   [currency_iso_code]
   (log/info "Processing categories")

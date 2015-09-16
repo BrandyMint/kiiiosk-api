@@ -5,9 +5,9 @@
             [libs.date :as date]
             [libs.money :as money]
             [libs.queries :as queries]
-            [generators.libs.params :refer [params]]
-            [generators.libs.currencies :refer [currencies]]
-            [generators.libs.categories :refer [categories]]
+            [generators.libs.params :refer [params-markup]]
+            [generators.libs.currencies :refer [currencies-markup]]
+            [generators.libs.categories :refer [categories-markup]]
             [config]))
 
 (def ^:private doctype
@@ -28,10 +28,9 @@
      [:picture (:picture-url product)])
    (when (:description product)
      [:description (h (:description product))])
-   (when (money/has-different-values? (:price product)
-                                      (:oldprice product))
+   (when (money/has-different-values? (:price product) (:oldprice product))
      [:oldprice (money/minor-units->major-units (:oldprice product))])
-   (params (:custom-attributes product) vendor-id)])
+   (params-markup (:custom-attributes product) vendor-id)])
 
 (defn offers-markup
   "Принимает идентификатор продавца (vendor-id) получает список его продуктов,
@@ -63,15 +62,15 @@
   (log/info (str "Processing shop with ID " vendor-id))
   (let [vendor (queries/get-vendor vendor-id)]
     [:shop
-     [:name (:name vendor)]
-     [:company (:company-name vendor)]
      [:url (:url vendor)]
-     [:platform config/platform]
-     [:version config/version]
-     [:agency config/agency]
+     [:name (h (:name vendor))]
+     [:company (h (:company-name vendor))]
      [:email config/email]
-     (currencies (:currency-iso-code vendor))
-     (categories vendor-id)
+     [:agency config/agency]
+     [:version config/version]
+     [:platform config/platform]
+     (currencies-markup (:currency-iso-code vendor))
+     (categories-markup vendor-id)
      (deliveries-markup vendor-id)
      (offers-markup vendor-id)]))
 
