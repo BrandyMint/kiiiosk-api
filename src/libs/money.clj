@@ -13,3 +13,7 @@
   (if (= "RUB" currency)
     1
     (throw (Exception. "Only \"RUB\" currency supported!"))))
+
+(defn get-currency
+  [{:keys [currency]}]
+  currency)

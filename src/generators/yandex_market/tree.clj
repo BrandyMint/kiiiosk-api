@@ -24,7 +24,7 @@
    [:name        {} (:title product)]
    [:description {} (:description product)]
    [:categoryId  {} (first (:categories-ids product))]
-   [:currencyId  {} (get-in product [:price :currency])]
+   [:currencyId  {} (money/get-currency (:price product))]
    [:price       {} (money/minor-units->major-units (:price product))]
    (if (not= (:price product) (:oldprice product))
      [:oldprice  {} (money/minor-units->major-units (:oldprice product))])
@@ -36,8 +36,9 @@
   [vendor-id]
   (log/info "Processing offers")
   (let [products (queries/get-vendor-products vendor-id)]
-    [:offers {}
-     (map #(offer % vendor-id) products)]))
+    (when-not (= (count products) 0)
+      [:offers {}
+       (map #(offer % vendor-id) products)])))
 
 (defn delivery
   "Принимает сущность типа Delivery, и возвращает hiccup-представление элемента
