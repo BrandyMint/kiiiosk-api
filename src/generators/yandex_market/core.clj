@@ -23,6 +23,6 @@
   (let [tree (tree/generate-tree vendor-id)]
     (when-not (.exists (io/file output-path))
       (io/make-parents output-path))
-    (with-open [out-file (io/writer output-path :encoding "windows-1251")]
+    (with-open [out-file (io/writer output-path :encoding "UTF-8")]
       (.write out-file tree)))
   (notify-generation-finish vendor-id output-path))

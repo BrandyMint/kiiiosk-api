@@ -80,5 +80,5 @@
   "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
   всего дерева тегов"
   [vendor-id]
-  (str (xml-declaration "windows-1251")
+  (str (xml-declaration "UTF-8")
        (html (torg-price vendor-id))))

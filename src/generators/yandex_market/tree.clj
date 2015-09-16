@@ -18,7 +18,7 @@
   и возвращает hiccup-представление offer"
   [product vendor-id]
   (log/info (str "Processing offer with ID " (:id product)))
-  [:offer {:id (:id product) :available true}
+  [:offer {:id (:id product) :available "true"}
    [:url         {} (:url product)]
    [:picture     {} (:picture-url product)]
    [:name        {} (:title product)]
@@ -83,6 +83,6 @@
   "Принимает идентификатор продавца (vendor-id) и возвращает hiccup-представление
   всего дерева тегов"
   [vendor-id]
-  (str (xml-declaration "windows-1251")
+  (str (xml-declaration "UTF-8")
        (:yandex-market doctype)
        (html (yml-catalog vendor-id))))
