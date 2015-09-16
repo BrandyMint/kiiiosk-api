@@ -26,7 +26,8 @@
    [:categoryId  {} (first (:categories-ids product))]
    [:currencyId  {} (:price-currency product)]
    [:price       {} (money/minor-units->major-units (:price product))]
-   [:oldprice    {} (money/minor-units->major-units (:oldprice product))]
+   (if (not= (:price product) (:oldprice product))
+     [:oldprice  {} (money/minor-units->major-units (:oldprice product))])
    (params (:custom-attributes product) vendor-id)])
 
 (defn offers
