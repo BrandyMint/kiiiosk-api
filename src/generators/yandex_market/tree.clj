@@ -24,7 +24,7 @@
    [:name        {} (:title product)]
    [:description {} (:description product)]
    [:categoryId  {} (first (:categories-ids product))]
-   [:currencyId  {} (:price-currency product)]
+   [:currencyId  {} (get-in product [:price :currency])]
    [:price       {} (money/minor-units->major-units (:price product))]
    (if (not= (:price product) (:oldprice product))
      [:oldprice  {} (money/minor-units->major-units (:oldprice product))])
