@@ -1,6 +1,7 @@
 (ns schemas.product
   (:require [schema.core :as s]
-            [schema.coerce :as coerce]))
+            [schema.coerce :as coerce]
+            [clojure.string :refer [escape]]))
 
 (s/defschema Product
   {:id s/Int
@@ -21,7 +22,7 @@
   {:id id
    :url cached_public_url
    :title (or title stock_title)
-   :description (or description stock_description)
+   :description (escape (or description stock_description) {\" "\""})
    :price {:kopeks (if is_sale sale_price_kopeks price_kopeks)
            :currency (if is_sale sale_price_currency price_currency)}
    :oldprice {:kopeks price_kopeks

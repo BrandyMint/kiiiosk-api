@@ -19,12 +19,11 @@
   [product vendor-id]
   (log/info (str "Processing offer with ID " (:id product)))
   [:offer {:id (:id product) :available "true"}
+   [:url        {} (:url product)]
    [:name       {} (:title product)]
    [:categoryId {} (first (:categories-ids product))]
    [:price      {} (money/minor-units->major-units (:price product))]
    [:currencyId {} (money/get-currency (:price product))]
-   (when (:url product)
-     [:url {} (:url product)])
    (when (:picture-url product)
      [:picture {} (:picture-url product)])
    (when (:description product)
