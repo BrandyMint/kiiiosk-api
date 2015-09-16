@@ -33,17 +33,18 @@ namespace :deploy do
   end
 
 
-  task  :makewebapps do
+  task  :restart_apps do
     on roles :all do
-      within current_path do
-        execute "cd #{deploy_to}/current && mkdir -v webapps && cp -v target/server.jar webapps/ROOT.war"
-      end
+        execute "restart openapi-web || start openapi-web"
+        execute "restart yandex-market-worker || start yandex-market-worker"
+        execute "restart torg-mail-worker || start torg-mail-worker"
     end
   end
 
   after :published, 'leinclean'
   after :leinclean, 'leindeps'
   after :leindeps, 'leinuberwar'
-  after :leinuberwar, 'makewebapps'
+  after :finished, 'restart_apps'
 
 end
+
