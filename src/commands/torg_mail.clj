@@ -17,3 +17,7 @@
     (let [ch (lch/open conn)]
       (lb/publish ch default-exchange-name tmail-qname vendor-id)
       (notify-command-sent vendor-id))))
+
+(defn -main
+  [vendor-id]
+  (start-generate vendor-id))
