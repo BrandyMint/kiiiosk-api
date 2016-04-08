@@ -47,7 +47,7 @@ lein with-profile dev repl ;; Запускается repl с профилем de
 
 На 2-м сервере:
 
-`tail -f /var/log/tomcat7/catalina.out`
+`tail -f /var/log/upstart/{yandex-market-worker,torg-mail-worker,openapi-web}.log`
 
 ### Packaging and running as standalone jar
 
