@@ -8,9 +8,9 @@
    :ancestry (s/maybe s/Str)})
 
 (defn DBCategory->Category
-  [{:keys [id name ancestry]}]
+  [{:keys [id cached_title ancestry]}]
   {:id id
-   :name name
+   :name cached_title
    :ancestry ancestry})
 
 (def DBCategory->Category-coercer
