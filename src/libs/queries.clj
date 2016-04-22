@@ -37,8 +37,9 @@
 (defn get-vendor-products
   [vendor-id]
   (map DBProduct->Product-coercer
-       (query [(str "select * from products as p
+       (query [(str "select p.* from products as p
                               left join product_items as pi ON pi.product_id = p.id
+                              join product_images ON product_images.product_id = p.id
                               where
                               (pi.quantity IS NULL OR (pi.quantity IS NOT NULL AND pi.quantity > 0))
                               and p.deleted_at is null
@@ -50,7 +51,7 @@
                                 p.quantity IS NULL OR (p.quantity IS NOT NULL AND p.quantity > 0)
                               )
                               and p.has_ordering_goods = true
-                              and p.vendor_id = " vendor-id)])))
+                              and p.vendor_id = " vendor-id " GROUP BY p.id")])))
 
 (defn get-vendor-property
   [vendor-id property-id]
