@@ -39,7 +39,6 @@
   (map DBProduct->Product-coercer
        (query [(str "select * from products as p
                               left join product_items as pi ON pi.product_id = p.id
-                              join product_images ON product_images.product_id = p.id
                               where
                               (pi.quantity IS NULL OR (pi.quantity IS NOT NULL AND pi.quantity > 0))
                               and p.deleted_at is null
